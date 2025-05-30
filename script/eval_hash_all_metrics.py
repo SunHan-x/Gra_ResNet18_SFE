@@ -4,7 +4,7 @@ import torch
 import numpy as np
 import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader
-from retrieval_net import SFDH_FGIR
+from retrieval_net import SalientFeatureHashNet
 from hash_patch_dataset import get_dataloader
 import config_hash as cfg
 
@@ -91,29 +91,29 @@ def compute_map(query_codes, query_labels, db_codes, db_labels, topk=None):
 
 def denormalize(tensor):
     """
-    将 [-1, 1] 区间的张量还原到 [0, 1]，适合 matplotlib 显示
+    将 [-1, 1] 区间的张量还原到 [0, 1]
     """
     return (tensor * 0.5 + 0.5).clamp(0, 1)
 
 
 def main():
     device = torch.device(cfg.device if torch.cuda.is_available() else 'cpu')
-    print(f"🚀 使用设备: {device}")
+    print(f"使用设备: {device}")
 
     # 加载模型并恢复权重
-    model = SFDH_FGIR(hash_bits=cfg.hash_bits, num_classes=3).to(device)
+    model = SalientFeatureHashNet(hash_bits=cfg.hash_bits, num_classes=3).to(device)
     checkpoint = torch.load(os.path.join(cfg.checkpoint_dir, 'best_model.pth'), map_location=device)
     model.load_state_dict(checkpoint['model_state_dict'])
     model.eval()
-    print(f"✅ 模型加载完成！验证准确率: {checkpoint['val_acc']*100:.2f}%")
+    print(f"模型加载完成！验证准确率: {checkpoint['val_acc']*100:.2f}%")
 
     # 加载训练集（用于建库）和测试集（用于查询）
     train_loader, class_names = get_dataloader(cfg.train_data, batch_size=cfg.batch_size, transform_type='val')
     test_loader, _ = get_dataloader(cfg.test_data, batch_size=1, transform_type='val')
-    print(f"📊 类别: {class_names}")
+    print(f"类别: {class_names}")
 
     # 提取训练集哈希数据库
-    print("🔍 构建哈希数据库...")
+    print("构建哈希数据库...")
     db_imgs, db_labels, db_codes = [], [], []
     with torch.no_grad():
         for imgs, labels in train_loader:
@@ -125,7 +125,7 @@ def main():
 
     db_codes = torch.cat(db_codes)
     db_labels = torch.tensor(db_labels)
-    print(f"✅ 数据库构建完成！共 {len(db_codes)} 个样本")
+    print(f"数据库构建完成！共 {len(db_codes)} 个样本")
 
     # 初始化统计
     top1_correct, topk_correct = 0, 0
@@ -133,7 +133,7 @@ def main():
     total = 0
 
     # 遍历测试集做检索评估
-    print("\n🔍 开始检索评估...")
+    print("\n开始检索评估...")
     os.makedirs('./results/visualization_topk', exist_ok=True)
     
     for i, (img, label) in enumerate(test_loader):
@@ -168,11 +168,11 @@ def main():
     map_score = compute_map(query_hashes, query_labels, db_codes, db_labels, topk=cfg.map_top_k)
 
     # 打印最终结果
-    print("\n📊 检索评估结果：")
+    print("\n检索评估结果：")
     print(f"Top-1 Accuracy: {top1_correct / total * 100:.2f}%")
     print(f"Top-{cfg.top_k} Accuracy: {topk_correct / total * 100:.2f}%")
     print(f"mAP@{cfg.map_top_k}: {map_score * 100:.2f}%")
-    print(f"\n✅ 评估完成！可视化结果保存在 ./results/visualization_topk/ 目录下")
+    print(f"\n评估完成！可视化结果保存在 ./results/visualization_topk/ 目录下")
 
 
 if __name__ == '__main__':

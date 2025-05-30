@@ -7,7 +7,7 @@ from hash_patch_dataset import get_dataloader
 from retrieval_net import RetrievalNet
 import config_hash as cfg
 
-# 反归一化函数（基于 ImageNet 标准）
+# 反归一化函数
 IMAGENET_MEAN = [0.485, 0.456, 0.406]
 IMAGENET_STD = [0.229, 0.224, 0.225]
 
@@ -106,7 +106,6 @@ def main():
         visualize_topk(query_img, query_label, db_imgs, db_labels, db_codes, model, class_names, save_path)
 
     # 输出整体准确率
-    print("\n📊 检索评估完成：")
     print(f"Top-1 Accuracy: {100.0 * top1_correct / total:.2f}%")
     print(f"Top-5 Accuracy: {100.0 * top5_correct / total:.2f}%")
 

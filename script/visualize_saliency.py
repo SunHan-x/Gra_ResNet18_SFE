@@ -3,7 +3,7 @@ import torchvision.transforms as transforms
 from PIL import Image
 import matplotlib.pyplot as plt
 import numpy as np
-from retrieval_net import SFDH_FGIR, ASFE
+from retrieval_net import SalientFeatureHashNet, ASFE
 import matplotlib as mpl
 import os
 from datetime import datetime
@@ -114,7 +114,7 @@ def process_images(image_dir, model_path=None, thresholds=[0.3, 0.5, 0.7], img_s
     ensure_dir(save_dir)
     
     # 初始化模型
-    model = SFDH_FGIR(hash_bits=48, num_classes=3)
+    model = SalientFeatureHashNet(hash_bits=48, num_classes=3)
     if model_path:
         checkpoint = torch.load(model_path)
         model.load_state_dict(checkpoint['model_state_dict'])
@@ -146,6 +146,6 @@ def process_images(image_dir, model_path=None, thresholds=[0.3, 0.5, 0.7], img_s
 if __name__ == '__main__':
     # 使用示例
     image_dir = r'C:\Workspace_yolo\ultralytics\MultiClass_Dataset_patch\hash_dataset_split\test\missing'  # 图像目录
-    model_path = r'C:\Workspace_yolo\ultralytics\results\checkpoints_sfdh_fgir\best_model.pth'
+    model_path = r'C:\Workspace_yolo\ultralytics\results\checkpoints_salient_feature_hash\best_model.pth'
     # 批量处理图像
     process_images(image_dir, model_path, thresholds=[0.3, 0.5, 0.7], img_size=448) 

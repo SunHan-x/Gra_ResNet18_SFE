@@ -4,10 +4,10 @@ from torch.utils.data import DataLoader
 def get_dataloader(data_dir, batch_size, transform_type='train', num_workers=4):
     """
     返回一个可用于训练/验证的 DataLoader
-    :param data_dir: 数据集路径，需是 ImageFolder 格式
+    :param data_dir: 数据集路径
     :param batch_size: 批处理大小
     :param transform_type: 数据增强类型（train 或 val/test）
-    :param num_workers: 数据加载线程数（推荐设为4或更多）
+    :param num_workers: 数据加载线程数
     :return: 加载器 + 类别列表
     """
 

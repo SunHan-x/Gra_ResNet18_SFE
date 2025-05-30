@@ -1,10 +1,10 @@
+# YOLO2JSON
 import os
 import json
 from PIL import Image
 
 def yolo_to_json(label_dir, image_dir, output_json):
     """
-    将YOLO格式标注转为Patch-Level评估用的JSON格式
     :param label_dir: YOLO标注文件夹（.txt）
     :param image_dir: 原始图像文件夹
     :param output_json: 输出json文件路径
@@ -20,7 +20,7 @@ def yolo_to_json(label_dir, image_dir, output_json):
         image_path = os.path.join(image_dir, image_name)
 
         if not os.path.exists(image_path):
-            print(f"⚠️ 图像文件不存在: {image_name}，跳过")
+            print(f"图像文件不存在: {image_name}，跳过")
             continue
 
         img = Image.open(image_path)
@@ -52,7 +52,7 @@ def yolo_to_json(label_dir, image_dir, output_json):
     with open(output_json, 'w') as f:
         json.dump(gt_dict, f, indent=2)
 
-    print(f"✅ 转换完成，保存为: {output_json}")
+    print(f"转换完成，保存为: {output_json}")
 
 if __name__ == '__main__':
     label_dir = r'C:\Workspace_yolo\ultralytics\MultiClass_Dataset_remove_dirty\OriginLabels'

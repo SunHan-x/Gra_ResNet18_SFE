@@ -1,3 +1,4 @@
+# yolo2hash
 import os
 import json
 import torch
@@ -92,7 +93,7 @@ def evaluate_patch_level(gt_json_path, image_dir):
                 correct += 1
 
     acc = correct / total if total > 0 else 0.0
-    print(f"\n📊 Patch-Level Top-1 Accuracy: {acc * 100:.2f}%")
-    print(f"✅ 匹配Patch总数: {total}, 正确分类: {correct}")
+    print(f"\nPatch-Level Top-1 Accuracy: {acc * 100:.2f}%")
+    print(f"匹配Patch总数: {total}, 正确分类: {correct}")
 
     return acc

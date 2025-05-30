@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from datetime import datetime
-from retrieval_net import SFDH_FGIR, CenterLoss
+from retrieval_net import SalientFeatureHashNet, CenterLoss
 from hash_patch_dataset import get_dataloader
 import config_hash as cfg
 
@@ -31,7 +31,7 @@ def train():
     print(f"✅ 类别数: {num_classes}，类名: {classes}")
 
     # 初始化模型与损失函数
-    model = SFDH_FGIR(
+    model = SalientFeatureHashNet(
         hash_bits=cfg.hash_bits,
         num_classes=num_classes,
         loss_weight=[0, 0, 0]  # 不使用任何损失权重，只使用中心损失

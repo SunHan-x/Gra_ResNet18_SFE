@@ -1,10 +1,9 @@
+# 数据处理
 import os
 import shutil
 
 def copy_images(source_folder, destination_folder, start_num=1, end_num=600):
     """
-    将CPLID{start_num}.jpg到CPLID{end_num}.jpg的文件复制到目标文件夹
-    
     参数:
         source_folder: 源文件夹路径
         destination_folder: 目标文件夹路径

@@ -51,14 +51,11 @@ def hamming_distance(query, database):
 
 def denorm(tensor):
     """
-    将 [-1, 1] 区间的张量还原到 [0, 1]，适合 matplotlib 显示
+    将 [-1, 1] 区间的张量还原到 [0, 1]
     """
     return (tensor * 0.5 + 0.5).clamp(0, 1)
 
 def visualize_topk(query_path, db_imgs, db_labels, db_codes, model, class_names, save_path, topk=5):
-    """
-    展示 Top-K 检索图像（不检查准确性），并保存结果图
-    """
     query_code = extract_hash_code(model, query_path, device=cfg.device)
     dists = hamming_distance(query_code, db_codes)
     topk_idx = torch.topk(-dists, topk).indices
@@ -66,7 +63,7 @@ def visualize_topk(query_path, db_imgs, db_labels, db_codes, model, class_names,
     retrieved_imgs = [db_imgs[i] for i in topk_idx]
     retrieved_labels = [db_labels[i] for i in topk_idx]
 
-    # 读取查询图像（可以用 PIL，展示色彩最准确）
+    # 读取查询图像
     query_img = Image.open(query_path).convert("RGB")
     query_img.save(f'./results/yolo_hash/query_patch_{os.path.basename(query_path)}')
     plt.figure(figsize=(16, 4))
@@ -133,5 +130,5 @@ def main(input_path):
             visualize_topk(crop_path, db_imgs, db_labels, db_codes, model_hash, class_names, save_path)
 
 if __name__ == '__main__':
-    input_path = r"C:\Workspace_yolo\ultralytics\Query"  # 可设置为图片或文件夹
+    input_path = r"C:\Workspace_yolo\ultralytics\Query"
     main(input_path)
