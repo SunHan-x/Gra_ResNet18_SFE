@@ -1,4 +1,4 @@
-import os
+import os  # 数据处理
 
 
 def modify_class_ids(folder_path):

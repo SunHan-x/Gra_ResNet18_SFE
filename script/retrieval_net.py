@@ -3,16 +3,11 @@ import torch.nn as nn
 import torchvision.models as models
 
 class ASFE(nn.Module):
-    """自适应显著性特征提取模块 (Adaptive Salient Feature Extraction)
-    
+    """
     通过通道注意力机制自适应地突出缺陷区域的显著特征，抑制背景干扰。
     使用阈值机制生成二值掩码，保留高响应区域的特征信息。
     """
     def __init__(self, threshold=0.7):
-        """
-        Args:
-            threshold (float): 特征显著性阈值，用于生成二值掩码
-        """
         super(ASFE, self).__init__()
         self.threshold = threshold
         
