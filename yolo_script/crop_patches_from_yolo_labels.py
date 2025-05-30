@@ -7,8 +7,8 @@ def crop_patches_from_labels(img_folder, label_folder, save_folder, target_class
     :param img_folder: 原图文件夹路径
     :param label_folder: 标签文件夹路径
     :param save_folder: 保存patches的根目录
-    :param target_classes: 只裁剪特定类别（列表），如 [0,1,2]，如果为None裁所有
-    :param img_size: 输出patch的统一尺寸，如 (224,224)，如果为None不缩放
+    :param target_classes: 只裁剪特定类别
+    :param img_size: 输出patch的统一尺寸
     """
 
     os.makedirs(save_folder, exist_ok=True)
@@ -23,12 +23,12 @@ def crop_patches_from_labels(img_folder, label_folder, save_folder, target_class
         label_path = os.path.join(label_folder, os.path.splitext(img_name)[0] + '.txt')
 
         if not os.path.exists(label_path):
-            print(f"⚠️ 没找到标签: {label_path}")
+            print(f"没找到标签: {label_path}")
             continue
 
         img = cv2.imread(img_path)
         if img is None:
-            print(f"❌ 无法读取图像: {img_path}")
+            print(f"无法读取图像: {img_path}")
             continue
 
         h, w, _ = img.shape
@@ -78,16 +78,16 @@ def crop_patches_from_labels(img_folder, label_folder, save_folder, target_class
             save_path = os.path.join(cls_folder, save_name)
             cv2.imwrite(save_path, patch)
 
-        print(f"✅ 处理完成: {img_name}")
+        print(f"   处理完成: {img_name}")
 
-    print("\n🎯 所有图片裁剪完成！")
+    print("\n   所有图片裁剪完成！")
 
-# 示例调用
+# 调用
 if __name__ == '__main__':
     img_folder = r'C:\Workspace_yolo\ultralytics\MultiClass_Dataset_patch\OriginImages'      # 原图路径
     label_folder = r'C:\Workspace_yolo\ultralytics\MultiClass_Dataset_patch\OriginLabels'    # 标签路径
-    save_folder = r'C:\Workspace_yolo\ultralytics\MultiClass_Dataset_patch\hash_dataset'         # 保存patch的根目录
-    target_classes = [0, 1, 2]                      # 只保留这些类别，如果裁全部，设为None
-    img_size = (224, 224)                              # 统一尺寸输出，如果不想缩放，设为None
+    save_folder = r'C:\Workspace_yolo\ultralytics\MultiClass_Dataset_patch\hash_dataset'     # 保存patch的根目录
+    target_classes = [0, 1, 2]                     
+    img_size = (224, 224)                       
 
     crop_patches_from_labels(img_folder, label_folder, save_folder, target_classes, img_size)

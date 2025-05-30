@@ -1,3 +1,4 @@
+# 划分数据集
 import os
 import random
 import shutil
@@ -12,7 +13,7 @@ def split_dataset(src_folder, dst_folder, train_ratio=0.7, val_ratio=0.2, test_r
     :param test_ratio: 测试集比例
     :param seed: 随机种子，保证复现
     """
-    assert abs(train_ratio + val_ratio + test_ratio - 1.0) < 1e-6, "比例之和必须为1"
+    assert abs(train_ratio + val_ratio + test_ratio - 1.0) < 1e-6
 
     random.seed(seed)
 
@@ -42,11 +43,9 @@ def split_dataset(src_folder, dst_folder, train_ratio=0.7, val_ratio=0.2, test_r
                 dst_img_path = os.path.join(split_cls_folder, img_name)
                 shutil.copyfile(src_img_path, dst_img_path)
 
-        print(f"✅ 类别 [{cls_name}] 划分完成: {n_total}张 -> train:{len(train_imgs)} val:{len(val_imgs)} test:{len(test_imgs)}")
+        print(f"类别 [{cls_name}] 划分完成: {n_total}张 -> train:{len(train_imgs)} val:{len(val_imgs)} test:{len(test_imgs)}")
 
-    print("\n🎯 全部类别划分完成！")
-
-# 示例调用
+# 调用
 if __name__ == '__main__':
     src_folder = r'C:\Workspace_yolo\ultralytics\MultiClass_Dataset_patch\hash_dataset'          # 小图原始数据集路径
     dst_folder = r'C:\Workspace_yolo\ultralytics\MultiClass_Dataset_patch\hash_dataset_split'    # 划分后保存的新路径
