@@ -9,6 +9,19 @@ from hash_patch_dataset import get_dataloader
 import config_hash as cfg
 import matplotlib.pyplot as plt
 
+# ==== 路径配置 ====
+# YOLO模型路径
+YOLO_MODEL_PATH = r'runs/train/YOLO11_CBAM/weights/best.pt'
+
+# 输入输出路径
+SOURCE_IMAGE_DIR = r'predict_image'  # 源图片文件夹
+CROP_SAVE_DIR = r'predict_result/savepatch'        # 裁剪图片保存文件夹
+RESULT_SAVE_DIR = r'predict_result/savedata'        # 结果保存文件夹
+
+# 哈希模型相关路径
+HASH_MODEL_PATH = os.path.join(cfg.checkpoint_dir, 'best_hash_model.pth')
+TRAIN_DATA_PATH = cfg.train_data  # 训练数据路径，用于构建哈希数据库
+
 # ==== 检测缺陷并裁剪patch ====
 def detect_and_crop(model_yolo, image_path, crop_save_dir, conf_thresh=0.3):
     img = Image.open(image_path).convert("RGB")
@@ -28,7 +41,7 @@ def detect_and_crop(model_yolo, image_path, crop_save_dir, conf_thresh=0.3):
 # ==== 加载哈希模型 ====
 def load_hash_model(device):
     model = RetrievalNet(hash_bits=cfg.hash_bits, num_classes=3).to(device)
-    model.load_state_dict(torch.load(os.path.join(cfg.checkpoint_dir, 'best_hash_model.pth'), map_location=device))
+    model.load_state_dict(torch.load(HASH_MODEL_PATH, map_location=device))
     model.eval()
     return model
 
@@ -65,7 +78,10 @@ def visualize_topk(query_path, db_imgs, db_labels, db_codes, model, class_names,
 
     # 读取查询图像
     query_img = Image.open(query_path).convert("RGB")
-    query_img.save(f'./results/yolo_hash/query_patch_{os.path.basename(query_path)}')
+    query_save_path = os.path.join(RESULT_SAVE_DIR, 'query_patches', f'query_patch_{os.path.basename(query_path)}')
+    os.makedirs(os.path.dirname(query_save_path), exist_ok=True)
+    query_img.save(query_save_path)
+    
     plt.figure(figsize=(16, 4))
 
     # 显示查询图
@@ -77,11 +93,8 @@ def visualize_topk(query_path, db_imgs, db_labels, db_codes, model, class_names,
     # 显示 Top-K 返回图
     for i in range(topk):
         plt.subplot(1, topk + 1, i + 2)
-
-        # Tensor 图像反归一化
         img_vis = denorm(retrieved_imgs[i]).permute(1, 2, 0).numpy()
         plt.imshow(img_vis)
-
         label_text = class_names[retrieved_labels[i]]
         plt.title(f'Top-{i+1}\n{label_text}', fontsize=10)
         plt.axis('off')
@@ -91,19 +104,18 @@ def visualize_topk(query_path, db_imgs, db_labels, db_codes, model, class_names,
     plt.savefig(save_path, dpi=300)
     plt.close()
 
-
 # ==== 主函数 ====
-def main(input_path):
+def main():
     device = torch.device(cfg.device if torch.cuda.is_available() else 'cpu')
 
     # 加载YOLOv11模型
-    model_yolo = YOLO(r'C:\Workspace_yolo\ultralytics\runs\train\single_defective_4.23_remove_wrongdata\weights\best.pt')
+    model_yolo = YOLO(YOLO_MODEL_PATH)
 
     # 加载哈希网络
     model_hash = load_hash_model(device)
 
     # 构建数据库
-    train_loader, class_names = get_dataloader(cfg.train_data, batch_size=cfg.batch_size, transform_type='val')
+    train_loader, class_names = get_dataloader(TRAIN_DATA_PATH, batch_size=cfg.batch_size, transform_type='val')
     db_imgs, db_labels, db_codes = [], [], []
     for imgs, labels in train_loader:
         imgs = imgs.to(device)
@@ -114,21 +126,19 @@ def main(input_path):
         db_labels.extend(labels.tolist())
     db_codes = torch.cat(db_codes)
 
-    # 处理输入图像或文件夹
-    if os.path.isdir(input_path):
-        img_list = [os.path.join(input_path, f) for f in os.listdir(input_path) if f.lower().endswith(('.jpg', '.png'))]
-    else:
-        img_list = [input_path]
+    # 处理输入图像文件夹
+    img_list = [os.path.join(SOURCE_IMAGE_DIR, f) for f in os.listdir(SOURCE_IMAGE_DIR) 
+                if f.lower().endswith(('.jpg', '.png', '.jpeg'))]
 
     for img_path in img_list:
         # 缺陷检测+裁剪
-        crop_paths = detect_and_crop(model_yolo, img_path, crop_save_dir="./temp/crops")
+        crop_paths = detect_and_crop(model_yolo, img_path, CROP_SAVE_DIR)
 
         # 检索每个patch
         for i, crop_path in enumerate(crop_paths):
-            save_path = f'./results/yolo_hash/query_{os.path.basename(img_path).split(".")[0]}_{i}.png'
+            save_path = os.path.join(RESULT_SAVE_DIR, 'retrieval_results', 
+                                   f'query_{os.path.basename(img_path).split(".")[0]}_{i}.png')
             visualize_topk(crop_path, db_imgs, db_labels, db_codes, model_hash, class_names, save_path)
 
 if __name__ == '__main__':
-    input_path = r"C:\Workspace_yolo\ultralytics\Query"
-    main(input_path)
+    main()
