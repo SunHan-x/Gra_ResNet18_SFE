@@ -9,7 +9,7 @@ if __name__ == '__main__':
               split='val',
               imgsz=640,
               batch=32,
-              iou=0.75,
+              iou=0.5,
               rect=False,
               save_json=False,
               project='runs/val',
