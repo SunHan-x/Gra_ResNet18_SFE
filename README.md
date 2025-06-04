@@ -18,7 +18,7 @@
 
 ### 脚本目录 (`script/`)
 - `train_hash.py`: 哈希网络训练脚本
-- `retrieval_net.py`: 检索网络结构
+- `retrieval_net.py`: 哈希检索网络结构
 - `visualize_saliency.py`: 灰度图显著性图可视化工具
 - `eval_hash_all_metrics.py`: 哈希模型评估脚本
 - `predict_yolo_hash.py`: YOLO+哈希联合预测
