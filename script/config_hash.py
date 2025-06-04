@@ -1,13 +1,13 @@
 # config_hash.py
 
 # 训练集路径
-train_data = r'C:\Workspace_yolo\ultralytics\Patch_Dataset\hash_dataset_split\train'
+train_data = r'C:\Workspace_yolo\hash_dataset_split\train'
 
 # 验证集路径
-val_data = r'C:\Workspace_yolo\ultralytics\Patch_Dataset\hash_dataset_split\val'
+val_data = r'C:\Workspace_yolo\hash_dataset_split\val'
 
 # 测试集路径
-test_data = r'C:\Workspace_yolo\ultralytics\Patch_Dataset\hash_dataset_split\test'
+test_data = r'C:\Workspace_yolo\hash_dataset_split\test'
 
 # 批处理大小
 batch_size = 64
@@ -28,7 +28,7 @@ epochs = 100
 device = 'cuda'
 
 # 模型保存目录
-checkpoint_dir = './results/checkpoints'
+checkpoint_dir = './checkpoints'
 
 # 动态损失权重（[α, β, γ] 分别为哈希相似损失、量化损失、分类损失权重）
 loss_weight = [1.0, 0.1, 0.5]
